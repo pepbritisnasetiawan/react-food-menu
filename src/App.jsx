@@ -22,18 +22,23 @@ function Header() {
 }
 
 function Menu() {
-  // const foods = [];
   const foods = data;
   const numFoods = foods.length;
   return (
     <main className="menu">
       <h2>Menu Kita</h2>
       {numFoods > 0 ? (
-        <ul className="foods">
-          {foods.map((food) => (
-            <Food food={food} key={food.nama} />
-          ))}
-        </ul>
+        <>
+          <p>
+            Aneka makanan Indonesia yang disajikan warteg boy sebagai pemenuhan
+            makanan kesehatan yang diperlukan dalam kehidupan sehari-hari.
+          </p>
+          <ul className="foods">
+            {foods.map((food) => (
+              <Food foodObj={food} key={food.nama} />
+            ))}
+          </ul>
+        </>
       ) : (
         <p>Kosong, gan. Besok dateng lagi.</p>
       )}
@@ -41,14 +46,15 @@ function Menu() {
   );
 }
 
-function Food({ food }) {
+function Food(props) {
+  const { nama, deskripsi, harga, foto, stok } = props.foodObj;
   return (
-    <li className="food">
-      <img src={food.foto} alt={food.nama} width="100" height="70" />
+    <li className={`food ${!stok ? 'sold-out' : ''}`}>
+      <img src={foto} alt={nama} width="100" height="70" />
       <div>
-        <h3>{food.nama}</h3>
-        <p>{food.deskripsi}</p>
-        <span>{food.harga}</span>
+        <h3>{nama}</h3>
+        <p>{deskripsi}</p>
+        <span>{stok ? `Rp ${harga}` : 'Habis'}</span>
       </div>
     </li>
   );
@@ -60,22 +66,33 @@ function Footer() {
   const jamTutup = 22;
   const isOpen = hour >= jamBuka && hour <= jamTutup;
 
+  if (isOpen) {
+    return <FooterOpenHour jamBuka={jamBuka} jamTutup={jamTutup} />;
+  } else {
+    return <FooterCloseHour jamBuka={jamBuka} jamTutup={jamTutup} />;
+  }
+}
+
+function FooterOpenHour({ jamBuka, jamTutup }) {
   return (
     <footer className="footer">
-      {isOpen ? (
-        <div className="order">
-          <p>
-            {new Date().getFullYear()} Warung Mang Udin | jam buka {jamBuka} -
-            jam tutup {jamTutup}
-          </p>
-          <button className="btn">Order</button>
-        </div>
-      ) : (
+      <div className="order">
         <p>
-          Maaf gan masih tutup. Coba dateng lagi sekitar jam {jamBuka}-
-          {jamTutup}.
+          {new Date().getFullYear()} Warung Mang Udin | jam buka {jamBuka} - jam
+          tutup {jamTutup}
         </p>
-      )}
+        <button className="btn">Order</button>
+      </div>
+    </footer>
+  );
+}
+
+function FooterCloseHour({ jamBuka, jamTutup }) {
+  return (
+    <footer className="footer">
+      <p>
+        Maaf gan masih tutup. Coba dateng lagi sekitar jam {jamBuka}-{jamTutup}.
+      </p>
     </footer>
   );
 }
